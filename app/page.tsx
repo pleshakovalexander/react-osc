@@ -1,7 +1,6 @@
 "use client";
-import { useState } from "react";
-import { Synth } from "./synth";
 import { MouseTracker, Position } from "./mouse-track";
+import { closestNoteFrequency } from "./utils";
 
 export default function Home() {
   const context = new AudioContext();
@@ -21,11 +20,6 @@ export default function Home() {
     gain.connect(context.destination);
 
     oscillator.start();
-  };
-
-  const closestNoteFrequency = (frequency: number): number => {
-    const midi = Math.round(69 + 12 * Math.log2(frequency / 440));
-    return 440 * Math.pow(2, (midi - 69) / 12);
   };
 
   const clickNote = (frequency: number) => {

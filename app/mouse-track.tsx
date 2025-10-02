@@ -11,6 +11,7 @@ export const MouseTracker = ({
   positionChanged: (position: Position) => void;
 }) => {
   const [position, setPosition] = useState<Position | null>(null);
+  const [emitMove, setAllowEmitMove] = useState<boolean>(false);
 
   const updatePosition = (
     clientX: number,
@@ -22,14 +23,18 @@ export const MouseTracker = ({
       y: Math.max(0, Math.min(clientY - rect.top, rect.height)),
     };
 
-    positionChanged(data);
-
     setPosition(data);
+
+    if (emitMove) {
+      console.log(data);
+      positionChanged(data);
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>): void => {
     const rect = e.currentTarget.getBoundingClientRect();
-    // updatePosition(e.clientX, e.clientY, rect);
+
+    updatePosition(e.clientX, e.clientY, rect);
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>): void => {
@@ -47,9 +52,11 @@ export const MouseTracker = ({
   };
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>): void => {
-    const rect = e.currentTarget.getBoundingClientRect();
+    // const rect = e.currentTarget.getBoundingClientRect();
 
-    updatePosition(e.clientX, e.clientY, rect);
+    setAllowEmitMove(true);
+
+    // updatePosition(e.clientX, e.clientY, rect);
   };
 
   return (
