@@ -1,102 +1,87 @@
 "use client";
+import { useRef } from "react";
 import { MouseTracker, Position } from "./mouse-track";
 import { closestNoteFrequency } from "./utils";
 
 export default function Home() {
-  const context = new AudioContext();
+  const contextRef = useRef<AudioContext | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainRef = useRef<GainNode | null>(null);
+  const currentFrequencyRef = useRef<number | null>(null);
+  const lastUpdateRef = useRef(0);
 
-  let oscillator: OscillatorNode | null = null;
-
-  let gain: GainNode | null = null;
-
-  let currentFrequency: number | null = null;
+  const getContext = () => {
+    if (!contextRef.current) {
+      contextRef.current = new AudioContext();
+    }
+    return contextRef.current;
+  };
 
   const setupOscillator = () => {
-    oscillator = context.createOscillator();
-    gain = context.createGain();
+    const context = getContext();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
 
     oscillator.type = "sine";
     oscillator.connect(gain);
     gain.connect(context.destination);
-
     oscillator.start();
+
+    oscillatorRef.current = oscillator;
+    gainRef.current = gain;
   };
 
   const clickNote = (frequency: number) => {
+    const context = getContext();
     const now = context.currentTime;
 
-    if (oscillator === null) {
+    if (!oscillatorRef.current || !gainRef.current) {
       setupOscillator();
     }
 
-    if (!oscillator) {
-      return;
-    }
+    const oscillator = oscillatorRef.current;
+    const gain = gainRef.current;
+    if (!oscillator || !gain) return;
 
-    if (!gain) {
-      return;
-    }
+    // If already playing this frequency, do nothing
+    if (frequency === currentFrequencyRef.current) return;
 
-    // Cancel any previous automation to avoid conflicts
-    oscillator.frequency.cancelScheduledValues(now);
-    gain.gain.cancelScheduledValues(now);
+    currentFrequencyRef.current = frequency;
 
-    // If same note is playing, fade it out first
-    if (frequency === currentFrequency) {
-      gain.gain.cancelScheduledValues(now);
-      // gain.gain.setValueAtTime(0, now + 0.01);
-      gain.gain.linearRampToValueAtTime(0, now + 0.05);
+    // Ensure volume is up smoothly
+    gain.gain.setTargetAtTime(1, now, 0.05);
 
-      gain.gain.cancelScheduledValues(context.currentTime + 0.1);
-      // Make sure volume is up
-      // gain?.gain.setValueAtTime(gain.gain.value, now);
-      gain.gain.linearRampToValueAtTime(1, context.currentTime + 0.11);
-
-      return;
-    }
-
-    currentFrequency = frequency;
-
-    // Make sure volume is up
-    gain.gain.setValueAtTime(gain.gain.value, now);
-    gain.gain.linearRampToValueAtTime(1, now + 0.01);
-
-    // Smooth glide in 0.3 seconds (tweak this time for faster/slower glide)
-    oscillator.frequency.linearRampToValueAtTime(frequency, now + 0.3);
+    // Glide frequency instead of hard reset
+    oscillator.frequency.setTargetAtTime(frequency, now, 0.1);
   };
 
   const stopNote = () => {
+    const context = getContext();
+    const gain = gainRef.current;
     if (!gain) return;
 
     const now = context.currentTime;
-
-    // Fade out over 0.3s
-    gain.gain.cancelScheduledValues(now);
-    gain.gain.setValueAtTime(gain.gain.value, now);
-    gain.gain.linearRampToValueAtTime(0, now + 0.3);
+    // Smooth fade out
+    gain.gain.setTargetAtTime(0, now, 0.1);
   };
 
-  const trackpadPositionChanged = (position: Position) => {
-    const frequency = closestNoteFrequency(position.x + 100);
+  const trackpadPositionChanged = (position: Position | null) => {
+    if (position === null) {
+      stopNote();
+      return;
+    }
 
+    const now = performance.now();
+    if (now - lastUpdateRef.current < 50) return; // max ~20 updates/sec
+    lastUpdateRef.current = now;
+
+    const frequency = closestNoteFrequency(position.x + 100);
     clickNote(frequency);
   };
 
   return (
     <div className="h-full flex justify-center content-center gap-2">
       <MouseTracker positionChanged={trackpadPositionChanged} />
-      <button className="bg-amber-300" onClick={() => clickNote(130.8)}>
-        130.8
-      </button>
-      <button className="bg-amber-300" onClick={() => clickNote(174.6)}>
-        174.6
-      </button>
-      <button className="bg-amber-300" onClick={() => clickNote(329.6)}>
-        329.6
-      </button>
-      <button className="bg-amber-300" onClick={() => stopNote()}>
-        stop
-      </button>
     </div>
   );
 }
