@@ -19,29 +19,36 @@
   }
 }
 
+@layer base {
 
-/* reset */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-*, *::before, *::after{
-	box-sizing: border-box;
+  * {
+    margin: 0;
+    padding: 0;
+    font: inherit;
+  }
+
+  body {
+    min-height: 100vh;
+  }
+
+  img,
+  picture,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+
 }
 
-* {
-	margin: 0;
-	padding: 0;
-	font: inherit;
-}
 
-body{
-	min-height: 100vh;
-}
-
-img, picture, svg, video{
-	display: block;
-	max-width: 100%;
-}
-
-/*  */
 
 body {
   background: var(--background);
@@ -49,5 +56,3 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   min-height: 100vh;
 }
-
-

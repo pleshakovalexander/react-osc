@@ -65,6 +65,7 @@ export default function Home() {
     gain.gain.setTargetAtTime(0, now, 0.1);
   };
 
+
   const trackpadPositionChanged = (position: Position | null) => {
     if (position === null) {
       stopNote();
@@ -80,7 +81,7 @@ export default function Home() {
   };
 
   return (
-    <div className="h-full flex justify-center content-center gap-2">
+    <div className="h-screen flex justify-center gap-2 pt-[28vh]">
       <MouseTracker positionChanged={trackpadPositionChanged} />
     </div>
   );

@@ -58,23 +58,21 @@ export const MouseTracker = ({ positionChanged }: Props) => {
   };
 
   return (
-    <div className="mx-auto w-[420px] max-w-full p-4">
-      <div className="rounded-3xl border-2 border-neutral-800 bg-neutral-900 p-3 shadow">
-        <div
-          onMouseMove={handleMouseMove}
-          onTouchMove={handleTouchMove}
-          onMouseLeave={handleMouseLeave}
-          onTouchEnd={handleTouchEnd}
-          onClick={handleClick}
-          className="
+    <div className="rounded-3xl w-[420px] h-[300px] border-2 border-neutral-800 bg-neutral-900 shadow">
+      <div
+        onMouseMove={handleMouseMove}
+        onTouchMove={handleTouchMove}
+        onMouseLeave={handleMouseLeave}
+        onTouchEnd={handleTouchEnd}
+        onClick={handleClick}
+        className="
             relative h-[300px] w-full select-none rounded-2xl border border-neutral-300/70 bg-white
             touch-none overflow-hidden
             bg-[radial-gradient(theme(colors.neutral.300)_1px,transparent_1px)]
             [background-size:16px_16px]
           "
-          aria-label="Wacom-like input surface"
-        ></div>
-      </div>
+        aria-label="Wacom-like input surface"
+      ></div>
     </div>
   );
 };
