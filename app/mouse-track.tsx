@@ -10,7 +10,6 @@ interface Props {
 }
 
 export const MouseTracker = ({ positionChanged }: Props) => {
-  const isAllowEmitMove = useRef<boolean>(false);
 
   const updatePosition = (
     clientX: number,
@@ -22,9 +21,9 @@ export const MouseTracker = ({ positionChanged }: Props) => {
       y: Math.max(0, Math.min(clientY - rect.top, rect.height)),
     };
 
-    if (isAllowEmitMove.current) {
-      positionChanged(data);
-    }
+
+    positionChanged(data);
+
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>): void => {
@@ -42,29 +41,26 @@ export const MouseTracker = ({ positionChanged }: Props) => {
   };
 
   const handleMouseLeave = (): void => {
-    if (isAllowEmitMove.current) {
-      positionChanged(null);
-    }
+
+    positionChanged(null);
+
   };
 
   const handleTouchEnd = (): void => {
-    if (isAllowEmitMove.current) {
-      positionChanged(null);
-    }
+
+    positionChanged(null);
+
   };
 
-  const handleClick = (): void => {
-    isAllowEmitMove.current = true;
-  };
+
 
   return (
-    <div className="rounded-3xl w-[420px] h-[300px] border-2 border-neutral-800 bg-neutral-900 shadow">
+    <div className="rounded-3xl border-2 border-neutral-800 bg-neutral-900 shadow">
       <div
         onMouseMove={handleMouseMove}
         onTouchMove={handleTouchMove}
         onMouseLeave={handleMouseLeave}
         onTouchEnd={handleTouchEnd}
-        onClick={handleClick}
         className="
             relative h-[300px] w-full select-none rounded-2xl border border-neutral-300/70 bg-white
             touch-none overflow-hidden
