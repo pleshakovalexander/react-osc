@@ -1,75 +1,59 @@
-/*
-  Super Simple TypeScript Synth with Lazy Init
-  - User API: play(note: number | Hz), stop()
-  - AudioContext is created lazily on first play() to avoid autoplay restrictions
-  - Ensures only one note plays at a time
-*/
-
 export class Synth {
-  public context: AudioContext | null = null;
-  private master: GainNode | null = null;
+  private currentFrequency: number | null = null;
+  private context: AudioContext | null = null;
   private osc: OscillatorNode | null = null;
   private gain: GainNode | null = null;
 
-  constructor() {}
-
-  /** Ensure AudioContext and master node exist */
-  private ensureContext() {
+  private getContext() {
     if (!this.context) {
       this.context = new AudioContext();
-      this.master = this.context.createGain();
-      this.master.gain.value = 0.8;
-      this.master.connect(this.context.destination);
     }
+    return this.context;
   }
 
-  /** Play a note (number interpreted as Hz for now) */
-  async play(noteOrHz: number) {
-    this.ensureContext();
-    if (!this.context || !this.master) return;
+  private setupOscillator() {
+    const context = this.getContext();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
 
-    await this.context.resume(); // ensure context is running
+    oscillator.type = "sine";
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start();
 
-    // stop any currently playing sound first
-    this.stop();
-
-    const freq = noteOrHz; // your original frequency logic
-
-    console.log(freq);
-
-    this.osc = this.context.createOscillator();
-    this.gain = this.context.createGain();
-
-    this.osc.type = "sawtooth";
-    this.osc.frequency.value = freq;
-    this.gain.gain.value = 0.8;
-
-    this.osc.connect(this.gain);
-    this.gain.connect(this.master);
-
-    this.osc.start();
+    this.osc = oscillator;
+    this.gain = gain;
   }
 
-  /** Stop the current note with a short fade to avoid clicks */
+  public play(frequency: number, volume: number = 1) {
+    const context = this.getContext();
+    const now = context.currentTime;
+
+    if (!this.osc || !this.gain) {
+      this.setupOscillator();
+    }
+
+    if (!this.osc || !this.gain) return;
+
+    // If already playing this frequency, do nothing
+    if (frequency === this.currentFrequency) return;
+
+    this.currentFrequency = frequency;
+
+    // Ensure volume is up smoothly
+    this.gain.gain.setTargetAtTime(volume, now, 0.05);
+
+    // Glide frequency instead of hard reset
+    this.osc.frequency.setTargetAtTime(frequency, now, 0.1);
+  }
+
   stop() {
-    if (this.gain && this.context) {
-      const now = this.context.currentTime;
-      this.gain.gain.cancelScheduledValues(now);
-      this.gain.gain.setValueAtTime(this.gain.gain.value, now);
-      this.gain.gain.linearRampToValueAtTime(0.0001, now + 0.05); // 50 ms fade
-    }
+    const context = this.getContext();
 
-    if (this.osc) {
-      try {
-        this.osc.stop(this.context!.currentTime + 0.05); // stop after fade
-      } catch {}
-      this.osc.disconnect();
-      this.osc = null;
-    }
+    if (!this.gain) return;
 
-    if (this.gain) {
-      this.gain.disconnect();
-      this.gain = null;
-    }
+    const now = context.currentTime;
+    // Smooth fade out
+    this.gain.gain.setTargetAtTime(0, now, 0.1);
   }
 }
