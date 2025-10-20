@@ -26,10 +26,10 @@ export default function Home() {
     if (now - lastUpdateRef.current < 50) return; // max ~20 updates/sec
     lastUpdateRef.current = now;
 
-    console.log(position.y);
-
     const frequency = closestNoteFrequency(position.x + 100);
-    synth.play(frequency);
+    const volume = Math.min(1 - Math.max(0.1, position.y / 300), 1);
+
+    synth.play(frequency, volume);
   };
 
   const startPlayingClicked = (): void => {

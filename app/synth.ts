@@ -1,5 +1,6 @@
 export class Synth {
   private currentFrequency: number | null = null;
+  private currentVolume: number | null = null;
   private context: AudioContext | null = null;
   private osc: OscillatorNode | null = null;
   private gain: GainNode | null = null;
@@ -36,12 +37,14 @@ export class Synth {
     if (!this.osc || !this.gain) return;
 
     // If already playing this frequency, do nothing
-    if (frequency === this.currentFrequency) return;
+    if (frequency === this.currentFrequency && volume === this.currentVolume)
+      return;
 
     this.currentFrequency = frequency;
+    this.currentVolume = volume;
 
     // Ensure volume is up smoothly
-    this.gain.gain.setTargetAtTime(volume, now, 0.05);
+    this.gain.gain.setTargetAtTime(volume, now, 0.01);
 
     // Glide frequency instead of hard reset
     this.osc.frequency.setTargetAtTime(frequency, now, 0.1);
