@@ -43,11 +43,8 @@ export class Synth {
     this.currentFrequency = frequency;
     this.currentVolume = volume;
 
-    // Ensure volume is up smoothly
-    this.gain.gain.setTargetAtTime(volume, now, 0.01);
-
-    // Glide frequency instead of hard reset
-    this.osc.frequency.setTargetAtTime(frequency, now, 0.1);
+    this.gain.gain.setTargetAtTime(volume, now, 0.015);
+    this.osc.frequency.setTargetAtTime(frequency, now, 0.015);
   }
 
   stop() {
@@ -56,7 +53,7 @@ export class Synth {
     if (!this.gain) return;
 
     const now = context.currentTime;
-    // Smooth fade out
+
     this.gain.gain.setTargetAtTime(0, now, 0.1);
   }
 }
