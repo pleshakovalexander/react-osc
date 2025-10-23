@@ -43,7 +43,10 @@ export default function Home() {
         {waitingForFirstClick && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 h-full w-full flex justify-center items-center">
             <button
-              className="px-4 py-2 bg-zinc-500 hover:bg-zinc-700 text-white rounded-lg shadow-lg transition-colors duration-200 cursor-pointer"
+              className="
+              bg-zinc-500 hover:bg-zinc-700 text-white 
+              dark:bg-zinc-200 dark:hover:bg-zinc-100 dark:text-zinc-700
+              rounded-lg shadow-lg transition-colors duration-200 cursor-pointer px-4 py-2"
               onClick={startPlayingClicked}
             >
               Start Playing
