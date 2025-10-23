@@ -10,7 +10,6 @@ interface Props {
 }
 
 export const MouseTracker = ({ positionChanged }: Props) => {
-
   const updatePosition = (
     clientX: number,
     clientY: number,
@@ -21,9 +20,7 @@ export const MouseTracker = ({ positionChanged }: Props) => {
       y: Math.max(0, Math.min(clientY - rect.top, rect.height)),
     };
 
-
     positionChanged(data);
-
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>): void => {
@@ -41,30 +38,28 @@ export const MouseTracker = ({ positionChanged }: Props) => {
   };
 
   const handleMouseLeave = (): void => {
-
     positionChanged(null);
-
   };
 
   const handleTouchEnd = (): void => {
-
     positionChanged(null);
-
   };
 
-
-
   return (
-    <div className="rounded-3xl border-2 border-neutral-800 bg-neutral-900 shadow">
+    <div className="rounded-3xl shadow">
       <div
         onMouseMove={handleMouseMove}
         onTouchMove={handleTouchMove}
         onMouseLeave={handleMouseLeave}
         onTouchEnd={handleTouchEnd}
         className="
-            relative h-[300px] w-full select-none rounded-2xl border border-neutral-300/70 bg-white
+            relative h-[300px] w-full select-none rounded-2xl border
+           border-neutral-300/70 bg-white 
+             bg-[radial-gradient(theme(colors.neutral.300)_1px,transparent_1px)]
+             dark:border-neutral-500/70 dark:bg-neutral-700
+             dark:bg-[radial-gradient(theme(colors.neutral.500/70)_1px,transparent_1px)]
+
             touch-none overflow-hidden
-            bg-[radial-gradient(theme(colors.neutral.300)_1px,transparent_1px)]
             [background-size:16px_16px]
           "
         aria-label="Wacom-like input surface"
