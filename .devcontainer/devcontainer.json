@@ -1,0 +1,14 @@
+{
+  "name": "Node.js",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "remoteUser": "node",
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
+  ],
+  "postCreateCommand": "sudo chown node node_modules",
+  "containerEnv": {
+    "NPM_CONFIG_MAXSOCKETS": "1",
+    "NPM_CONFIG_PREFER_ONLINE": "true",
+    "NPM_CONFIG_PREFER_OFFLINE": "false"
+  },
+}
