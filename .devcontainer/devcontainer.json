@@ -10,5 +10,5 @@
     "NPM_CONFIG_MAXSOCKETS": "1",
     "NPM_CONFIG_PREFER_ONLINE": "true",
     "NPM_CONFIG_PREFER_OFFLINE": "false"
-  },
+  }
 }
