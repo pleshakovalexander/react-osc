@@ -1,5 +1,4 @@
-import { useRef } from "react";
-
+"use client";
 export type Position = {
   x: number;
   y: number;
@@ -13,7 +12,7 @@ export const MouseTracker = ({ positionChanged }: Props) => {
   const updatePosition = (
     clientX: number,
     clientY: number,
-    rect: DOMRect
+    rect: DOMRect,
   ): void => {
     const data: Position = {
       x: Math.max(0, Math.min(clientX - rect.left, rect.width)),
