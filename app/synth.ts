@@ -1,18 +1,24 @@
-export class Synth {
+class Synth {
   private currentFrequency: number | null = null;
   private currentVolume: number | null = null;
   private context: AudioContext | null = null;
   private osc: OscillatorNode | null = null;
   private gain: GainNode | null = null;
 
-  private getContext() {
-    if (!this.context) {
+  public initialize(): void {
+    if (this.context === null) {
+      this.setupOscillator();
+    }
+  }
+
+  private getContext(): AudioContext {
+    if (this.context === null) {
       this.context = new AudioContext();
     }
     return this.context;
   }
 
-  private setupOscillator() {
+  private setupOscillator(): void {
     const context = this.getContext();
     const oscillator = context.createOscillator();
     const gain = context.createGain();
@@ -24,9 +30,11 @@ export class Synth {
 
     this.osc = oscillator;
     this.gain = gain;
+    const now = context.currentTime;
+    this.gain.gain.setTargetAtTime(0, now, 0.1);
   }
 
-  public play(frequency: number, volume: number = 1) {
+  public play(frequency: number, volume: number = 1): void {
     const context = this.getContext();
     const now = context.currentTime;
 
@@ -47,7 +55,7 @@ export class Synth {
     this.osc.frequency.setTargetAtTime(frequency, now, 0.015);
   }
 
-  stop() {
+  stop(): void {
     const context = this.getContext();
 
     if (!this.gain) return;
@@ -57,3 +65,6 @@ export class Synth {
     this.gain.gain.setTargetAtTime(0, now, 0.1);
   }
 }
+const synth = new Synth();
+
+export default synth;
