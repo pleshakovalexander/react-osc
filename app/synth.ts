@@ -64,6 +64,14 @@ class Synth {
 
     this.gain.gain.setTargetAtTime(0, now, 0.1);
   }
+
+  public changeType(type: OscillatorType) {
+    if (this.osc == null) {
+      return;
+    }
+
+    this.osc.type = type;
+  }
 }
 const synth = new Synth();
 
